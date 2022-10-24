@@ -4,7 +4,32 @@ import heapq
 dx = [-1, 1, 0, 0]
 dy = [0, 0, 1, -1]
 
-
+def getChildren(state):
+    children = []
+    idx = state.index('0')
+    i = int(idx / 3)
+    j = int(idx % 3)
+    for x in range(0, 4):
+        nx = i + dx[x]
+        ny = j + dy[x]
+        nwIdx = int(nx * 3 + ny)
+        if checkValid(nx, ny):
+            listTemp = list(state)
+            listTemp[idx], listTemp[nwIdx] = listTemp[nwIdx], listTemp[idx]
+            children.append(''.join(listTemp))
+    return children
+def getPath(parentMap,inputState):
+    path = []
+    temp = "012345678"
+    while temp != inputState:
+        path.append(temp)
+        temp = parentMap[temp]
+    path.append(inputState)
+    path.reverse()
+    return path
+def printPath(path):
+    for i in path:
+        print(i)
 def BFS(inpt):
     q = []
     explored = {}
@@ -14,35 +39,16 @@ def BFS(inpt):
         state = q.pop(0)
         explored[state] = 1
         if state == "012345678":
-            # Preparing the path
-            path = []
-            temp = "012345678"
-            while temp != inpt:
-                path.append(temp)
-                temp = parent[temp]
-            path.append(inpt)
-
-            # Reversing the path
-            path.reverse()
-            # Printing the path
-            for i in path:
-                print(i)
+            path = getPath(parent,inpt)
+            printPath(path)
             return 1
 
-        idx = state.index('0')
-        i = int(idx / 3)
-        j = int(idx % 3)
-        for x in range(0, 4):
-            nx = i + dx[x]
-            ny = j + dy[x]
-            nwIdx = int(nx * 3 + ny)
-            if checkValid(nx, ny):
-                listTemp = list(state)
-                listTemp[idx], listTemp[nwIdx] = listTemp[nwIdx], listTemp[idx]
-                newString = ''.join(listTemp)
-                if not newString in explored and not newString in q:
-                    q.append(newString)
-                    parent[newString] = state
+        children = getChildren(state)
+        for child in children:
+            if not child in explored:
+                q.append(child)
+                parent[child] = state
+                explored[child]=1
     return 0
 
 
@@ -55,36 +61,16 @@ def DFS(inpt):
         state = stack[-1]
         stack.pop()
         if state == "012345678":
-            path = []
-            temp = "012345678"
-            while temp != inpt:
-                path.append(temp)
-                temp = parent[temp]
-            path.append(inpt)
-
-            # Reversing the path
-            path.reverse()
-            # Printing the path
-            for i in path:
-                print(i)
+            path = getPath(parent,inpt)
+            printPath(path)
             return 1
 
-        idx = state.index('0')
-        i = int(idx / 3)
-        j = int(idx % 3)
-        for x in range(0, 4):
-            nx = i + dx[x]
-            ny = j + dy[x]
-            nwIdx = int(nx * 3 + ny)
-            if checkValid(nx, ny):
-                listTemp = list(state)
-                listTemp[idx], listTemp[nwIdx] = listTemp[nwIdx], listTemp[idx]
-                newString = ''.join(listTemp)
-                if not newString in explored:
-                    explored[newString] = 1
-                    parent[newString] = state
-                    stack.append(newString)
-
+        children = getChildren(state)
+        for child in children:
+            if not child in explored:
+                stack.append(child)
+                parent[child]=state
+                explored[child]=1
     return 0
 
 
@@ -327,7 +313,7 @@ def AStarSearch_manhattan(inpt):
 # else :
 #     print("unsolvable")
 # print("------------------------")
-if AStarSearch("583704126"):
+if BFS("583704126"):
     print("solvable")
 else:
     print("unsolvable")
