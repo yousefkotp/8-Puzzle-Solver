@@ -30,6 +30,10 @@ def getPath(parentMap,inputState):
 def printPath(path):
     for i in path:
         print(i)
+def goalTest(state):
+    if state =="012345678":
+        return True
+    return False
 def BFS(inpt):
     q = []
     explored = {}
@@ -38,7 +42,7 @@ def BFS(inpt):
     while q:
         state = q.pop(0)
         explored[state] = 1
-        if state == "012345678":
+        if goalTest(state):
             path = getPath(parent,inpt)
             printPath(path)
             return 1
@@ -60,7 +64,7 @@ def DFS(inpt):
     while stack:
         state = stack[-1]
         stack.pop()
-        if state == "012345678":
+        if goalTest(state):
             path = getPath(parent,inpt)
             printPath(path)
             return 1
@@ -115,56 +119,27 @@ def AStarSearch(inpt):
     heap_map[inpt] = 1
     k = 0
     while heap:
-
         node = heapq.heappop(heap)
         state = node[1]
-        # print(state)
         parent_cost = node[0]
         explored[state] = 1
-        if state == "012345678":
-            # Preparing the path
-            path = []
-            temp = "012345678"
-            while temp != inpt:
-                path.append(temp)
-                temp = parent[temp]
-            path.append(inpt)
-
-            # Reversing the path
-            path.reverse()
-            # Printing the path
-            for i in path:
-                print(i)
+        if goalTest(state):
+            path = getPath(parent,inpt)
+            printPath(path)
             return 1
 
-        idx = state.index('0')
-        i = int(idx / 3)
-        j = int(idx % 3)
-        for x in range(0, 4):
-            nx = i + dx[x]
-            ny = j + dy[x]
-            nwIdx = int(nx * 3 + ny)
-            if checkValid(nx, ny):
-
-                listTemp = list(state)
-                listTemp[idx], listTemp[nwIdx] = listTemp[nwIdx], listTemp[idx]
-                newString = ''.join(listTemp)
-                # if k<=3 :
-                #     print("----------"+newString)
-                #     k+=1
-
-                # out=[item for item in heap if item[1] == newString]
-                if not newString in explored and not newString in heap_map:
-                    heapq.heappush(heap, (parent_cost + 1, newString))
-                    heap_map[newString] = 1
-                    cost_map[newString] = parent_cost + 1
-                    parent[newString] = state
-                elif newString in heap_map:
-                    if (1 + parent_cost) < cost_map[newString]:
-                        parent[newString] = state
-                        cost_map[newString] = 1 + parent_cost
-                        heapq.heappush(heap, (parent_cost + 1, newString))
-
+        children = getChildren(state)
+        for child in children:
+            if not child in explored and not child in heap_map:
+                heapq.heappush(heap, (parent_cost + 1, child))
+                heap_map[child] = 1
+                cost_map[child] = parent_cost + 1
+                parent[child] = state
+            elif child in heap_map:
+                if (1 + parent_cost) < cost_map[child]:
+                    parent[child] = state
+                    cost_map[child] = 1 + parent_cost
+                    heapq.heappush(heap, (parent_cost + 1, child))
     return 0
 
 
@@ -177,60 +152,30 @@ def AStarSearch_euclid(inpt):
     cost_map[inpt] = 0
     heap_map = {}
     heap_map[inpt] = 1
-    k = 0
-    while heap:
 
+    while heap:
         node = heapq.heappop(heap)
         state = node[1]
-        # print(state)
         parent_cost = node[0]
         explored[state] = 1
-        if state == "012345678":
-            # Preparing the path
-            path = []
-            temp = "012345678"
-            while temp != inpt:
-                path.append(temp)
-                temp = parent[temp]
-            path.append(inpt)
-
-            # Reversing the path
-            path.reverse()
-            # Printing the path
-            for i in path:
-                print(i)
+        if goalTest(state):
+            path = getPath(parent,inpt)
+            printPath(path)
             return 1
 
-        idx = state.index('0')
-        i = int(idx / 3)
-        j = int(idx % 3)
-        for x in range(0, 4):
-            nx = i + dx[x]
-            ny = j + dy[x]
-            nwIdx = int(nx * 3 + ny)
-            if checkValid(nx, ny):
-
-                listTemp = list(state)
-                listTemp[idx], listTemp[nwIdx] = listTemp[nwIdx], listTemp[idx]
-                newString = ''.join(listTemp)
-                # if k<=3 :
-                #     print("----------"+newString)
-                #     k+=1
-
-                # out=[item for item in heap if item[1] == newString]
-
-                new_cost = getEuclideanDistance(newString)
-                if not newString in explored and not newString in heap_map:
-                    heapq.heappush(heap, (parent_cost + new_cost, newString))
-                    heap_map[newString] = 1
-                    cost_map[newString] = parent_cost + new_cost
-                    parent[newString] = state
-                elif newString in heap_map:
-                    if (new_cost + parent_cost) < cost_map[newString]:
-                        parent[newString] = state
-                        cost_map[newString] = new_cost + parent_cost
-                        heapq.heappush(heap, (parent_cost + 1, newString))
-
+        children = getChildren(state)
+        for child in children:
+            new_cost = getEuclideanDistance(child)
+            if not child in explored and not child in heap_map:
+                heapq.heappush(heap, (parent_cost + new_cost, child))
+                heap_map[child] = 1
+                cost_map[child] = parent_cost + new_cost
+                parent[child] = state
+            elif child in heap_map:
+                if (new_cost + parent_cost) < cost_map[child]:
+                    parent[child] = state
+                    cost_map[child] = new_cost + parent_cost
+                    heapq.heappush(heap, (parent_cost + 1, child))
     return 0
 
 
@@ -243,96 +188,45 @@ def AStarSearch_manhattan(inpt):
     cost_map[inpt] = 0
     heap_map = {}
     heap_map[inpt] = 1
-    k = 0
     while heap:
-
         node = heapq.heappop(heap)
         state = node[1]
-        # print(state)
         parent_cost = node[0]
         explored[state] = 1
-        if state == "012345678":
-            # Preparing the path
-            path = []
-            temp = "012345678"
-            while temp != inpt:
-                path.append(temp)
-                temp = parent[temp]
-            path.append(inpt)
-
-            # Reversing the path
-            path.reverse()
-            # Printing the path
-            for i in path:
-                print(i)
+        if goalTest(state):
+            path = getPath(parent,inpt)
+            printPath(path)
             return 1
-
-        idx = state.index('0')
-        i = int(idx / 3)
-        j = int(idx % 3)
-        for x in range(0, 4):
-            nx = i + dx[x]
-            ny = j + dy[x]
-            nwIdx = int(nx * 3 + ny)
-            if checkValid(nx, ny):
-
-                listTemp = list(state)
-                listTemp[idx], listTemp[nwIdx] = listTemp[nwIdx], listTemp[idx]
-                newString = ''.join(listTemp)
-                # if k<=3 :
-                #     print("----------"+newString)
-                #     k+=1
-
-                # out=[item for item in heap if item[1] == newString]
-                new_cost = getManhattanDistance(newString)
-                if not newString in explored and not newString in heap_map:
-                    heapq.heappush(heap, (parent_cost + new_cost, newString))
-                    heap_map[newString] = 1
-                    cost_map[newString] = parent_cost + new_cost
-                    parent[newString] = state
-                elif newString in heap_map:
-                    if (new_cost + parent_cost) < cost_map[newString]:
-                        parent[newString] = state
-                        cost_map[newString] = new_cost + parent_cost
-                        heapq.heappush(heap, (parent_cost + 1, newString))
+        children = getChildren(state)
+        for child in children:
+            new_cost = getManhattanDistance(child)
+            if not child in explored and not child in heap_map:
+                heapq.heappush(heap, (parent_cost + new_cost, child))
+                heap_map[child] = 1
+                cost_map[child] = parent_cost + new_cost
+                parent[child] = state
+            elif child in heap_map:
+                if (new_cost + parent_cost) < cost_map[child]:
+                    parent[child] = state
+                    cost_map[child] = new_cost + parent_cost
+                    heapq.heappush(heap, (parent_cost + 1, child))
 
     return 0
 
 
-# BFS("123845670")
-# print("------------------------")
-# AStarSearch("123845670")
-# print("====================")
-# AStarSearch_euclid("123845670")
-# print("------------------------")
-# AStarSearch_manhattan("123845670")
 
-
-# if BFS("103245678"):
-#     print("solvable")
-# else :
-#     print("unsolvable")
-# print("------------------------")
-if BFS("583704126"):
+if AStarSearch_euclid("583704126"):
     print("solvable")
 else:
     print("unsolvable")
-# print("====================")
-# AStarSearch_euclid("583704126")
-# print("------------------------")
-# AStarSearch_manhattan("583704126")
 
-
-# map={}
-# map[1]=2
-# print(map[2])
+# Test Cases
+# 583704126,
 
 
 # heap = []
 # heapq.heappush(heap, (2,"one"))
-
 # heapq.heappush(heap, (1,"one"))
-
 
 # # if (,"one") in heap:
 # out=[item for item in heap if item[1] == "one"]
