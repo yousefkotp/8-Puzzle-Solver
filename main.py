@@ -34,16 +34,16 @@ def goalTest(state):
     if state =="012345678":
         return True
     return False
-def BFS(inpt):
+def BFS(inputState):
     q = []
     explored = {}
     parent = {}
-    q.append(inpt)  # here you place the input
+    q.append(inputState)  # here you place the input
     while q:
         state = q.pop(0)
         explored[state] = 1
         if goalTest(state):
-            path = getPath(parent,inpt)
+            path = getPath(parent,inputState)
             printPath(path)
             return 1
 
@@ -56,16 +56,16 @@ def BFS(inpt):
     return 0
 
 
-def DFS(inpt):
+def DFS(inputState):
     stack = []
     explored = {}
     parent = {}
-    stack.append(inpt)
+    stack.append(inputState)
     while stack:
         state = stack[-1]
         stack.pop()
         if goalTest(state):
-            path = getPath(parent,inpt)
+            path = getPath(parent,inputState)
             printPath(path)
             return 1
 
@@ -108,15 +108,15 @@ def getEuclideanDistance(state):
     return sum
 
 
-def AStarSearch(inpt):
+def AStarSearch(inputState):
     heap = []
     explored = {}
     parent = {}
     cost_map = {}
-    heapq.heappush(heap, (0, inpt))
-    cost_map[inpt] = 0
+    heapq.heappush(heap, (0, inputState))
+    cost_map[inputState] = 0
     heap_map = {}
-    heap_map[inpt] = 1
+    heap_map[inputState] = 1
     k = 0
     while heap:
         node = heapq.heappop(heap)
@@ -124,7 +124,7 @@ def AStarSearch(inpt):
         parent_cost = node[0]
         explored[state] = 1
         if goalTest(state):
-            path = getPath(parent,inpt)
+            path = getPath(parent,inputState)
             printPath(path)
             return 1
 
@@ -143,15 +143,15 @@ def AStarSearch(inpt):
     return 0
 
 
-def AStarSearch_euclid(inpt):
+def AStarSearch_euclid(inputState):
     heap = []
     explored = {}
     parent = {}
     cost_map = {}
-    heapq.heappush(heap, (0, inpt))
-    cost_map[inpt] = 0
+    heapq.heappush(heap, (0, inputState))
+    cost_map[inputState] = 0
     heap_map = {}
-    heap_map[inpt] = 1
+    heap_map[inputState] = 1
 
     while heap:
         node = heapq.heappop(heap)
@@ -159,7 +159,7 @@ def AStarSearch_euclid(inpt):
         parent_cost = node[0]
         explored[state] = 1
         if goalTest(state):
-            path = getPath(parent,inpt)
+            path = getPath(parent,inputState)
             printPath(path)
             return 1
 
@@ -179,22 +179,22 @@ def AStarSearch_euclid(inpt):
     return 0
 
 
-def AStarSearch_manhattan(inpt):
+def AStarSearch_manhattan(inputState):
     heap = []
     explored = {}
     parent = {}
     cost_map = {}
-    heapq.heappush(heap, (0, inpt))
-    cost_map[inpt] = 0
+    heapq.heappush(heap, (0, inputState))
+    cost_map[inputState] = 0
     heap_map = {}
-    heap_map[inpt] = 1
+    heap_map[inputState] = 1
     while heap:
         node = heapq.heappop(heap)
         state = node[1]
         parent_cost = node[0]
         explored[state] = 1
         if goalTest(state):
-            path = getPath(parent,inpt)
+            path = getPath(parent,inputState)
             printPath(path)
             return 1
         children = getChildren(state)
