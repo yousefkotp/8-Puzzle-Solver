@@ -117,7 +117,6 @@ def AStarSearch(inputState):
     cost_map[inputState] = 0
     heap_map = {}
     heap_map[inputState] = 1
-    k = 0
     while heap:
         node = heapq.heappop(heap)
         state = node[1]
@@ -215,7 +214,7 @@ def AStarSearch_manhattan(inputState):
 
 
 
-if AStarSearch_euclid("583704126"):
+if AStarSearch("583704126"):
     print("solvable")
 else:
     print("unsolvable")
