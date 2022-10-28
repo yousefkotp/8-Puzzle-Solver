@@ -3,6 +3,7 @@ import heapq
 
 dx = [-1, 1, 0, 0]
 dy = [0, 0, 1, -1]
+
 dfs_counter=0
 bfs_counter=0
 euclid_counter=0
@@ -84,6 +85,8 @@ def BFS(inputState):
                 q.append(child_int)
                 parent[child_int] = state
                 explored[child_int]=1
+    bfs_path=[]    
+    bfs_cost=0                
     bfs_counter=cnt
     return 0
 
@@ -117,6 +120,8 @@ def DFS(inputState):
                 stack.append(child_int)
                 parent[child_int]=state
                 explored[child_int]=1
+    dfs_path=[]    
+    dfs_cost=0            
     dfs_counter=cnt            
     return 0
 
@@ -192,6 +197,8 @@ def AStarSearch_manhattan(inputState):
                     parent[child_int] = state
                     cost_map[child_int] = new_cost + parent_cost +1
                     heapq.heappush(heap, (parent_cost + 1 + new_cost, child_int))
+    manhattan_cost=0                    
+    manhattan_path=[]                    
     manhattan_counter=(len(explored))
     return 0
 def AStarSearch_euclid(inputState):
@@ -236,6 +243,8 @@ def AStarSearch_euclid(inputState):
                     parent[child_int] = state
                     cost_map[child_int] = new_cost + parent_cost +1
                     heapq.heappush(heap, (parent_cost + 1 + new_cost, child_int))
+    euclid_cost=0
+    euclid_path=[]                
     euclid_counter=(len(explored))
     return 0
 
@@ -273,13 +282,25 @@ print("---------------")
 print(str(dfs_cost)+" "+str(bfs_cost)+" "+str(euclid_cost)+" "+str(manhattan_cost))
 
 #  7,0,2,8,5,3,6,4,1 unsolvable state
-# print(DFS("702853641"))
-# print("---------------")
-# print(AStarSearch_euclid("702853641"))
-# print("---------------")
-# print(AStarSearch_manhattan("702853641"))
-# print("---------------")
-# print(BFS("702853641"))
+print("---------------")
+print(DFS("702853641"))
+print("---------------")
+print(AStarSearch_euclid("702853641"))
+print("---------------")
+print(AStarSearch_manhattan("702853641"))
+print("---------------")
+print(BFS("702853641"))
+print(dfs_path)
+print("---------------")
+print(bfs_path)
+print("---------------")
+print(euclid_path)
+print("---------------")
+print(manhattan_path)
+print("---------------")
+print(str(dfs_counter)+" "+str(bfs_counter)+" "+str(euclid_counter)+" "+str(manhattan_counter))
+print("---------------")
+print(str(dfs_cost)+" "+str(bfs_cost)+" "+str(euclid_cost)+" "+str(manhattan_cost))
 
 
 
