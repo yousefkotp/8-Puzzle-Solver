@@ -3,6 +3,21 @@ import heapq
 
 dx = [-1, 1, 0, 0]
 dy = [0, 0, 1, -1]
+dfs_counter=0
+bfs_counter=0
+euclid_counter=0
+manhattan_counter=0
+
+dfs_path=[]
+bfs_path=[]
+euclid_path=[]
+manhattan_path=[]
+
+dfs_cost=0
+bfs_cost=0
+euclid_cost=0
+manhattan_cost=0
+
 
 def getStringRepresentation(x):
     if(int(math.log10(x))+1 == 9):
@@ -46,12 +61,20 @@ def BFS(inputState):
     parent = {}
     integer_state=int(inputState)
     q.append(integer_state)  # here you place the input
+    cnt=0
+    global bfs_counter
+    global bfs_path
+    global bfs_cost
     while q:
+        cnt+=1
         state = q.pop(0)
         explored[state] = 1
         if goalTest(state):
             path = getPath(parent,int(inputState))
-            printPath(path)
+            #printPath(path)
+            bfs_counter=cnt
+            bfs_path=path
+            bfs_cost=len(path)-1
             return 1
 
         children = getChildren(getStringRepresentation(state))
@@ -61,6 +84,7 @@ def BFS(inputState):
                 q.append(child_int)
                 parent[child_int] = state
                 explored[child_int]=1
+    bfs_counter=cnt
     return 0
 
 
@@ -70,12 +94,20 @@ def DFS(inputState):
     parent = {}
     integer_state=int(inputState)
     stack.append(integer_state)
+    cnt=0
+    global dfs_counter
+    global dfs_path
+    global dfs_cost
     while stack:
+        cnt+=1
         state = stack[-1]
         stack.pop()
         if goalTest(state):
             path = getPath(parent,int(inputState))
-            printPath(path)
+            #printPath(path)
+            dfs_counter=cnt
+            dfs_path=path
+            dfs_cost=len(path)-1
             return 1
 
         children = getChildren(getStringRepresentation(state))
@@ -85,6 +117,7 @@ def DFS(inputState):
                 stack.append(child_int)
                 parent[child_int]=state
                 explored[child_int]=1
+    dfs_counter=cnt            
     return 0
 
 
@@ -128,6 +161,9 @@ def AStarSearch_manhattan(inputState):
     cost_map[integer_state] = getManhattanDistance(inputState)
     heap_map = {}
     heap_map[integer_state] = 1
+    global manhattan_counter
+    global manhattan_path
+    global manhattan_cost
     while heap:
         node = heapq.heappop(heap)
         state = node[1]
@@ -136,7 +172,10 @@ def AStarSearch_manhattan(inputState):
         explored[state] = 1
         if goalTest(state):
             path = getPath(parent,int(inputState))
-            printPath(path)
+            #printPath(path)
+            manhattan_path=path
+            manhattan_counter=(len(explored))
+            manhattan_cost=len(path)-1
             return 1
         
         children = getChildren(string_state)
@@ -153,7 +192,7 @@ def AStarSearch_manhattan(inputState):
                     parent[child_int] = state
                     cost_map[child_int] = new_cost + parent_cost +1
                     heapq.heappush(heap, (parent_cost + 1 + new_cost, child_int))
-
+    manhattan_counter=(len(explored))
     return 0
 def AStarSearch_euclid(inputState):
     
@@ -166,6 +205,9 @@ def AStarSearch_euclid(inputState):
     cost_map[integer_state] = getEuclideanDistance(inputState)
     heap_map = {}
     heap_map[integer_state] = 1
+    global euclid_counter
+    global euclid_path
+    global euclid_cost
     while heap:
         node = heapq.heappop(heap)
         state = node[1]
@@ -174,7 +216,10 @@ def AStarSearch_euclid(inputState):
         explored[state] = 1
         if goalTest(state):
             path = getPath(parent,int(inputState))
-            printPath(path)
+            #printPath(path)
+            euclid_path=path
+            euclid_counter=(len(explored))
+            euclid_cost=len(path)-1
             return 1
         
         children = getChildren(string_state)
@@ -191,7 +236,7 @@ def AStarSearch_euclid(inputState):
                     parent[child_int] = state
                     cost_map[child_int] = new_cost + parent_cost +1
                     heapq.heappush(heap, (parent_cost + 1 + new_cost, child_int))
-
+    euclid_counter=(len(explored))
     return 0
 
 
@@ -206,22 +251,35 @@ def AStarSearch_euclid(inputState):
 
 
 
-# DFS("123045678")
-# print("---------------")
-# AStarSearch_euclid("123045678")
-# print("---------------")
-# print(AStarSearch_manhattan("123045678"))
-# print("---------------")
-# BFS("123045678")
+DFS("123045678")
+print("---------------")
+BFS("123045678")
+print("---------------")
+AStarSearch_euclid("123045678")
+print("---------------")
+AStarSearch_manhattan("123045678")
+print("---------------")
+
+print(dfs_path)
+print("---------------")
+print(bfs_path)
+print("---------------")
+print(euclid_path)
+print("---------------")
+print(manhattan_path)
+print("---------------")
+print(str(dfs_counter)+" "+str(bfs_counter)+" "+str(euclid_counter)+" "+str(manhattan_counter))
+print("---------------")
+print(str(dfs_cost)+" "+str(bfs_cost)+" "+str(euclid_cost)+" "+str(manhattan_cost))
 
 #  7,0,2,8,5,3,6,4,1 unsolvable state
-print(DFS("702853641"))
-print("---------------")
-print(AStarSearch_euclid("702853641"))
-print("---------------")
-print(AStarSearch_manhattan("702853641"))
-print("---------------")
-print(BFS("702853641"))
+# print(DFS("702853641"))
+# print("---------------")
+# print(AStarSearch_euclid("702853641"))
+# print("---------------")
+# print(AStarSearch_manhattan("702853641"))
+# print("---------------")
+# print(BFS("702853641"))
 
 
 
