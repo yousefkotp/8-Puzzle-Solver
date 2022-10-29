@@ -74,7 +74,7 @@
     ```python
     nwIdx = int(nx * 3 + ny)
     ```
-  * The next state is a new string where index of "0" and the new index generated are swapped
+  * The next state is a new string where charachter "0" and the charachter at the new index are swapped
 
 ## Algorithms Used
 
