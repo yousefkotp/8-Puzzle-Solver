@@ -1,3 +1,4 @@
+from glob import glob
 import math
 import heapq
 
@@ -18,6 +19,11 @@ dfs_cost = 0
 bfs_cost = 0
 euclid_cost = 0
 manhattan_cost = 0
+
+dfs_depth=0
+bfs_depth=0
+euclid_depth=0
+manhattan_depth=0
 
 
 def getStringRepresentation(x):
@@ -81,16 +87,21 @@ def BFS(inputState):
     q = []
     explored = {}
     parent = {}
+    parent_cost={}
     integer_state = int(inputState)
     q.append(integer_state)  # here you place the input
     cnt = 0
     global bfs_counter
     global bfs_path
     global bfs_cost
+    global bfs_depth
+    bfs_depth=0
+    parent_cost[integer_state]=0
     while q:
         cnt += 1
         state = q.pop(0)
         explored[state] = 1
+        bfs_depth=max(bfs_depth,parent_cost[state])
         if goalTest(state):
             path = getPath(parent, int(inputState))
             # printPath(path)
@@ -106,6 +117,7 @@ def BFS(inputState):
                 q.append(child_int)
                 parent[child_int] = state
                 explored[child_int] = 1
+                parent_cost[child_int]= 1+ parent_cost[state]
     bfs_path = []
     bfs_cost = 0
     bfs_counter = cnt
@@ -119,17 +131,23 @@ def DFS(inputState):
     stack = []
     explored = {}
     parent = {}
+    parent_cost={}
+
     integer_state = int(inputState)
+    parent_cost[integer_state]=0
     explored[integer_state] = 1
     stack.append(integer_state)
     cnt = 0
     global dfs_counter
     global dfs_path
     global dfs_cost
+    global dfs_depth
+    dfs_depth=0
     while stack:
         cnt += 1
         state = stack[-1]
         stack.pop()
+        dfs_depth=max(dfs_depth,parent_cost[state])
         if goalTest(state):
             path = getPath(parent, int(inputState))
             # printPath(path)
@@ -145,6 +163,7 @@ def DFS(inputState):
                 stack.append(child_int)
                 parent[child_int] = state
                 explored[child_int] = 1
+                parent_cost[child_int]= 1+ parent_cost[state]
     dfs_path = []
     dfs_cost = 0
     dfs_counter = cnt
@@ -190,19 +209,23 @@ def AStarSearch_manhattan(inputState):
     explored = {}
     parent = {}
     cost_map = {}
-    heapq.heappush(heap, (0, integer_state))
+    heapq.heappush(heap, (getManhattanDistance(inputState), integer_state))
     cost_map[integer_state] = getManhattanDistance(inputState)
     heap_map = {}
     heap_map[integer_state] = 1
     global manhattan_counter
     global manhattan_path
     global manhattan_cost
+    global manhattan_depth
+    manhattan_depth=0
     while heap:
         node = heapq.heappop(heap)
         state = node[1]
         string_state = getStringRepresentation(state)
         parent_cost = node[0] - getManhattanDistance(string_state)
         explored[state] = 1
+        manhattan_depth=max(parent_cost,manhattan_depth)
+
         if goalTest(state):
             path = getPath(parent, int(inputState))
             # printPath(path)
@@ -240,19 +263,22 @@ def AStarSearch_euclid(inputState):
     explored = {}
     parent = {}
     cost_map = {}
-    heapq.heappush(heap, (0, integer_state))
+    heapq.heappush(heap, (getEuclideanDistance(inputState), integer_state))
     cost_map[integer_state] = getEuclideanDistance(inputState)
     heap_map = {}
     heap_map[integer_state] = 1
     global euclid_counter
     global euclid_path
     global euclid_cost
+    global euclid_depth
+    euclid_depth=0
     while heap:
         node = heapq.heappop(heap)
         state = node[1]
         string_state = getStringRepresentation(state)
         parent_cost = node[0] - getEuclideanDistance(string_state)
         explored[state] = 1
+        euclid_depth=max(parent_cost,euclid_depth)
         if goalTest(state):
             path = getPath(parent, int(inputState))
             # printPath(path)
@@ -288,7 +314,8 @@ def AStarSearch_euclid(inputState):
 # AStarSearch_euclid("583704126")
 # print("---------------")
 # print(AStarSearch_manhattan("583704126"))
-
+#123045678
+#----------------------------------------------------
 
 DFS("123045678")
 print("---------------")
@@ -310,16 +337,20 @@ print("---------------")
 print(str(dfs_counter) + " " + str(bfs_counter) + " " + str(euclid_counter) + " " + str(manhattan_counter))
 print("---------------")
 print(str(dfs_cost) + " " + str(bfs_cost) + " " + str(euclid_cost) + " " + str(manhattan_cost))
+print("---------------")
+print(str(dfs_depth)+" "+str(bfs_depth)+" "+str(round(euclid_depth))+" "+str(manhattan_depth))
 
+#-----------------------------------------------
+# 1,0,3,2,4,5,6,7,8 unsolvable 103245678
 #  7,0,2,8,5,3,6,4,1 unsolvable state
 print("---------------")
-print(DFS("702853641"))
+print(DFS("103245678"))
 print("---------------")
-print(BFS("702853641"))
+print(BFS("103245678"))
 print("---------------")
-print(AStarSearch_euclid("702853641"))
+print(AStarSearch_euclid("103245678"))
 print("---------------")
-print(AStarSearch_manhattan("702853641"))
+print(AStarSearch_manhattan("103245678"))
 print("---------------")
 
 print(dfs_path)
@@ -333,6 +364,10 @@ print("---------------")
 print(str(dfs_counter) + " " + str(bfs_counter) + " " + str(euclid_counter) + " " + str(manhattan_counter))
 print("---------------")
 print(str(dfs_cost) + " " + str(bfs_cost) + " " + str(euclid_cost) + " " + str(manhattan_cost))
+print("---------------")
+print(str(dfs_depth)+" "+str(bfs_depth)+" "+str(round(euclid_depth))+" "+str(manhattan_depth))
+
+#---------------------------------------------------
 
 # print("---------------")
 # n=213
