@@ -223,8 +223,9 @@ def AStarSearch_manhattan(inputState):
         state = node[1]
         string_state = getStringRepresentation(state)
         parent_cost = node[0] - getManhattanDistance(string_state)
+        if not state in explored:
+            manhattan_depth=max(parent_cost,manhattan_depth)
         explored[state] = 1
-        manhattan_depth=max(parent_cost,manhattan_depth)
 
         if goalTest(state):
             path = getPath(parent, int(inputState))
@@ -277,8 +278,10 @@ def AStarSearch_euclid(inputState):
         state = node[1]
         string_state = getStringRepresentation(state)
         parent_cost = node[0] - getEuclideanDistance(string_state)
+        if  not state in explored:
+            euclid_depth=max(parent_cost,euclid_depth)
         explored[state] = 1
-        euclid_depth=max(parent_cost,euclid_depth)
+    
         if goalTest(state):
             path = getPath(parent, int(inputState))
             # printPath(path)
@@ -317,13 +320,13 @@ def AStarSearch_euclid(inputState):
 #123045678
 #----------------------------------------------------
 
-DFS("123045678")
+DFS("123456780")
 print("---------------")
-BFS("123045678")
+BFS("123456780")
 print("---------------")
-AStarSearch_euclid("123045678")
+AStarSearch_euclid("123456780")
 print("---------------")
-AStarSearch_manhattan("123045678")
+AStarSearch_manhattan("123456780")
 print("---------------")
 
 print(dfs_path)
@@ -342,15 +345,15 @@ print(str(dfs_depth)+" "+str(bfs_depth)+" "+str(round(euclid_depth))+" "+str(man
 
 #-----------------------------------------------
 # 1,0,3,2,4,5,6,7,8 unsolvable 103245678
-#  7,0,2,8,5,3,6,4,1 unsolvable state
+#  7,0,2,8,5,3,6,4,1 unsolvable state 702853641
 print("---------------")
-print(DFS("103245678"))
+print(DFS("702853641"))
 print("---------------")
-print(BFS("103245678"))
+print(BFS("702853641"))
 print("---------------")
-print(AStarSearch_euclid("103245678"))
+print(AStarSearch_euclid("702853641"))
 print("---------------")
-print(AStarSearch_manhattan("103245678"))
+print(AStarSearch_manhattan("702853641"))
 print("---------------")
 
 print(dfs_path)
