@@ -16,14 +16,17 @@
   * [Contributors](#contributors)
 ## Deployment
 - The project was built using [Python 3.9](https://www.python.org/downloads/release/python-390/), make sure you configure your python interpreter correctly
-- "HOW TO RUN AND ENTERING INPUT" IS TO BE WRITTEN BY ADHAM AFTER ADDING GUI
+- You should run the "interface.py" python file inside the "GUI" folder, you can do that by running the following command inside the "GUI" folder
+ ```bash
+  python interface.py
+ ```
 
 ## State Representation
-- The state is represented as a single number starting from first row and first column as the most significant digit, and the bottom right as least significant digit, so the following state is represented as the number "012345678"
+- The state is represented as a single number starting from first row and first column as the most significant digit, and the bottom right as least significant digit, so the following state is represented as the number "102345678"
 <table align="center">
   <tr>
-    <td>0</td>
     <td>1</td>
+    <td>0</td>
     <td>2</td>
   </tr>
   <tr>
