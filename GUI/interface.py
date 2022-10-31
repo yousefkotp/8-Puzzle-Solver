@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-import time
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox, simpledialog
