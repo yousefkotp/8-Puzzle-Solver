@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import time
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox, simpledialog
@@ -16,6 +17,7 @@ class InterfaceApp:
 
     def __init__(self, master=None):
 
+        self._job = None
         self.appFrame = ttk.Frame(master)
         self.appFrame.configure(height=550, width=800)
         self.appFrame.pack(side="top")
@@ -36,6 +38,35 @@ class InterfaceApp:
         self.nextbutton.configure(cursor="hand2", image=self.img_nexticon)
         self.nextbutton.place(anchor="center", height=80, width=80, x=350, y=500)
         self.nextbutton.bind("<ButtonPress>", self.nextSequence)
+
+        self.fastforwardbutton = ttk.Button(self.appFrame)
+        self.img_fastforwardicon = tk.PhotoImage(file="fast-forward-icon.png")
+        self.fastforwardbutton.configure(cursor="hand2", image=self.img_fastforwardicon)
+        self.fastforwardbutton.place(anchor="center", height=80, width=80, x=450, y=500)
+        self.fastforwardbutton.bind("<ButtonPress>", self.fastForward)
+
+        self.fastbackwardbutton = ttk.Button(self.appFrame)
+        self.img_fastbackwardicon = tk.PhotoImage(file="fast-backward-icon.png")
+        self.fastbackwardbutton.configure(cursor="hand2", image=self.img_fastbackwardicon)
+        self.fastbackwardbutton.place(anchor="center", height=80, width=80, x=150, y=500)
+        self.fastbackwardbutton.bind("<ButtonPress>", self.fastBackward)
+
+        self.stopbutton = ttk.Button(self.appFrame)
+        self.img_stopicon = tk.PhotoImage(file="stop.png")
+        self.stopbutton.configure(cursor="hand2", image=self.img_stopicon, state='disabled')
+        self.stopbutton.place(anchor="center", height=80, width=80, x=550, y=500)
+        self.stopbutton.bind("<ButtonPress>", self.stopFastForward)
+
+        self.resetbutton = ttk.Button(self.appFrame)
+        self.img_reseticon = tk.PhotoImage(file="reset-icon.png")
+        self.resetbutton.configure(cursor="hand2", image=self.img_reseticon, state='disabled')
+        self.resetbutton.place(anchor="center", height=80, width=80, x=50, y=500)
+        self.resetbutton.bind("<ButtonPress>", self.resetStepCounter)
+
+        self.stepCount = ttk.Label(self.appFrame)
+        self.stepCount.configure(anchor="center", background="#d6d6d6",
+                                 font="{@Malgun Gothic Semilight} 12 {}", justify="center", text='0 / 0')
+        self.stepCount.place(anchor="center", width=200, x=300, y=440)
 
         self.contributorsbutton = ttk.Button(self.appFrame)
         self.contributorsbutton.configure(cursor="hand2", text='Contributors')
@@ -103,7 +134,7 @@ class InterfaceApp:
         self.enterstatebutton.bind("<ButtonPress>", self.enterInitialState)
 
         self.analysisbutton = ttk.Button(self.appFrame)
-        self.analysisbutton.configure(cursor="hand2", text='Print search analysis')
+        self.analysisbutton.configure(cursor="hand2", text='Show search analysis')
         self.analysisbutton.place(anchor="n", width=150, x=700, y=330)
         self.analysisbutton.bind("<ButtonPress>", self.printSearchAnalysis)
 
@@ -111,21 +142,22 @@ class InterfaceApp:
 
     def run(self):
         app.displayStateOnGrid('000000000')
+        self.updateGrid(self)
         self.mainwindow.mainloop()
 
     def prevSequence(self, event=None):
         global statepointer
         if statepointer > 0:
+            self.stopFastForward()
             statepointer -= 1
-            state = main.getStringRepresentation(path[statepointer])
-            app.displayStateOnGrid(state)
+            self.updateGrid(self)
 
     def nextSequence(self, event=None):
         global statepointer
         if statepointer < len(path) - 1:
+            self.stopFastForward()
             statepointer += 1
-            state = main.getStringRepresentation(path[statepointer])
-            app.displayStateOnGrid(state)
+            self.updateGrid(self)
 
     def solve(self, event=None):
         global algorithm, initialState
@@ -136,9 +168,11 @@ class InterfaceApp:
             if len(path) == 0:
                 print('<!> Unsolvable State')
                 messagebox.showinfo('Unsolvable!', 'The state you entered is unsolvable')
-                algorithm = initialState = None
+                initialState = None
+                self.reset()
             else:
                 print('<!> Solved!')
+                self.updateGrid(self)
         else:
             print('Cannot solve.\n'
                   'Algorithm in use: ' + str(algorithm) + '\n'
@@ -154,6 +188,7 @@ class InterfaceApp:
                 statepointer = 0
             else:
                 print('Invalid initial state')
+                messagebox.showerror('Input Error', 'Invalid initial state')
 
     def selectAlgorithm(self, event=None):
         global algorithm
@@ -171,14 +206,56 @@ class InterfaceApp:
 
     def printSearchAnalysis(self, event=None):
         if self.solved():
-            print('Analysis of ' + str(algorithm) + ' search\n'
-                                                    'initial state = ' + str(initialState) + '\n'
-                                                                                             '-------------------------------')
-            print('Path to goal:')
-            print(path)
-            print('Nodes expanded: ' + str(counter))
-            print(str(algorithm) + ' cost: ' + str(cost))
-            print('Search depth: ' + str(depth))
+            analytics = 'Analysis of ' + str(algorithm) + ' search\n'\
+                  'initial state = ' + str(initialState) + '\n'\
+                  '-------------------------------\n'\
+                  'Nodes expanded: ' + str(counter) + '\n' + 'Search depth: ' + str(depth)
+            print(analytics + '\n-')
+            messagebox.showinfo('Analysis', analytics)
+
+    def fastForward(self, event=None):
+        global statepointer
+        self.stopFastForward()
+        if statepointer < cost:
+            app.stopbutton.configure(state='enabled')
+            statepointer += 1
+            self.updateGrid(self)
+            ms = 50
+            if cost > 1000:
+                ms = 1
+            app._job = app.stepCount.after(ms, self.fastForward)
+        else:
+            self.stopFastForward()
+
+    def fastBackward(self, event=None):
+        global statepointer
+        self.stopFastForward()
+        if statepointer > 0:
+            app.stopbutton.configure(state='enabled')
+            statepointer -= 1
+            ms = 50
+            if cost > 1000:
+                ms = 1
+            app._job = app.stepCount.after(ms, self.fastBackward)
+        else:
+            self.stopFastForward()
+        self.updateGrid(self)
+
+    def stopFastForward(self, event=None):
+        if app._job is not None:
+            app.stopbutton.configure(state='disabled')
+            app.stepCount.after_cancel(app._job)
+            app._job = None
+
+
+
+    def resetStepCounter(self, event=None):
+        global statepointer
+        if statepointer > 0:
+            self.stopFastForward()
+            statepointer = 0
+            self.updateGrid(self)
+
 
     def displayStateOnGrid(self, state):
         if not backend.validateState(state):
@@ -221,15 +298,44 @@ class InterfaceApp:
 
     def resetGrid(self):
         global statepointer
-        app.displayStateOnGrid(str(initialState))
         statepointer = 0
+        self.updateGrid(self)
+        app.stepCount.configure(text=self.getStepCount())
 
-    @staticmethod
-    def reset():
+    def reset(self):
         global statepointer, path, cost, counter
         statepointer = cost = counter = 0
         path = []
-        app.displayStateOnGrid(str(initialState))
+        self.resetGrid()
+
+    @staticmethod
+    def getStepCount():
+        return str(statepointer) + ' / ' + str(cost)
+
+    @staticmethod
+    def updateGrid(self):
+        if cost > 0:
+            state = main.getStringRepresentation(path[statepointer])
+            app.displayStateOnGrid(state)
+            app.stepCount.configure(text=self.getStepCount())
+        if statepointer == 0:
+            app.resetbutton.configure(state='disabled')
+            app.backbutton.configure(state='disabled')
+            app.fastbackwardbutton.configure(state='disabled')
+        elif statepointer == cost:
+            app.backbutton.configure(state='disabled')
+        else:
+            app.resetbutton.configure(state='enabled')
+            app.backbutton.configure(state='enabled')
+            app.fastbackwardbutton.configure(state='enabled')
+
+        if cost == 0 or statepointer == cost:
+            app.fastforwardbutton.configure(state='disabled')
+            app.nextbutton.configure(state='disabled')
+        else:
+            app.fastforwardbutton.configure(state='enabled')
+            app.nextbutton.configure(state='enabled')
+
 
 
 if __name__ == "__main__":
