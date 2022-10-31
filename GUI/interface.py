@@ -5,7 +5,6 @@ from tkinter import messagebox, simpledialog
 
 import backend
 import main
-
 algorithm = None
 initialState = None
 statepointer = cost = counter = depth = 0
@@ -215,7 +214,7 @@ class InterfaceApp:
             path, cost, counter, depth = main.manhattan_path, main.manhattan_cost, main.manhattan_counter, main.manhattan_depth
         elif str(algorithm) == 'A* Euclidean':
             main.AStarSearch_euclid(initialState)
-            path, cost, counter, depth = main.euclid_path, main.euclid_cost, main.euclid_counter, main.euclid_depth
+            path, cost, counter, depth = main.euclid_path, main.euclid_cost, main.euclid_counter, round(main.euclid_depth)
         else:
             print('Error occurred')
 
@@ -229,9 +228,6 @@ class InterfaceApp:
         global statepointer, path, cost, counter
         statepointer = cost = counter = 0
         path = []
-        app.displayStateOnGrid(str(initialState))
-
-
 if __name__ == "__main__":
     global app
     root = tk.Tk()
