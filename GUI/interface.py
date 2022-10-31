@@ -292,7 +292,7 @@ class InterfaceApp:
             path, cost, counter, depth = main.manhattan_path, main.manhattan_cost, main.manhattan_counter, main.manhattan_depth
         elif str(algorithm) == 'A* Euclidean':
             main.AStarSearch_euclid(initialState)
-            path, cost, counter, depth = main.euclid_path, main.euclid_cost, main.euclid_counter, main.euclid_depth
+            path, cost, counter, depth = main.euclid_path, main.euclid_cost, main.euclid_counter, round(main.euclid_depth)
         else:
             print('Error occurred')
 
