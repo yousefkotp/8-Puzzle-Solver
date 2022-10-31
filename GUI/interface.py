@@ -8,7 +8,7 @@ import main
 
 algorithm = None
 initialState = None
-statepointer = cost = counter = 0
+statepointer = cost = counter = depth = 0
 path = []
 
 
@@ -178,8 +178,11 @@ class InterfaceApp:
             print(path)
             print('Nodes expanded: ' + str(counter))
             print(str(algorithm) + ' cost: ' + str(cost))
+            print('Search depth: ' + str(depth))
 
     def displayStateOnGrid(self, state):
+        if not backend.validateState(state):
+            state = '000000000'
         self.cell0.configure(text=backend.adjustDigit(state[0]))
         self.cell1.configure(text=backend.adjustDigit(state[1]))
         self.cell2.configure(text=backend.adjustDigit(state[2]))
@@ -200,19 +203,19 @@ class InterfaceApp:
 
     @staticmethod
     def solveState():
-        global path, cost, counter
+        global path, cost, counter, depth
         if str(algorithm) == 'BFS':
             main.BFS(initialState)
-            path, cost, counter = main.bfs_path, main.bfs_cost, main.bfs_counter
+            path, cost, counter, depth = main.bfs_path, main.bfs_cost, main.bfs_counter, main.bfs_depth
         elif str(algorithm) == 'DFS':
             main.DFS(initialState)
-            path, cost, counter = main.dfs_path, main.dfs_cost, main.dfs_counter
+            path, cost, counter, depth = main.dfs_path, main.dfs_cost, main.dfs_counter, main.dfs_depth
         elif str(algorithm) == 'A* Manhattan':
             main.AStarSearch_manhattan(initialState)
-            path, cost, counter = main.manhattan_path, main.manhattan_cost, main.manhattan_counter
+            path, cost, counter, depth = main.manhattan_path, main.manhattan_cost, main.manhattan_counter, main.manhattan_depth
         elif str(algorithm) == 'A* Euclidean':
             main.AStarSearch_euclid(initialState)
-            path, cost, counter = main.euclid_path, main.euclid_cost, main.euclid_counter
+            path, cost, counter, depth = main.euclid_path, main.euclid_cost, main.euclid_counter, main.euclid_depth
         else:
             print('Error occurred')
 
@@ -235,4 +238,3 @@ if __name__ == "__main__":
     root.title('8-Puzzle Solver')
     app = InterfaceApp(root)
     app.run()
-
