@@ -174,9 +174,11 @@ class InterfaceApp:
                 print('<!> Solved!')
                 self.updateGrid(self)
         else:
-            print('Cannot solve.\n'
-                  'Algorithm in use: ' + str(algorithm) + '\n'
-                                                          'Initial State   : ' + str(initialState) + '\n-')
+            solvingerror = 'Cannot solve.\n'\
+                        'Algorithm in use: ' + str(algorithm) + '\n'\
+                        'Initial State   : ' + str(initialState)
+            print(solvingerror + '\n-')
+            messagebox.showerror('Cannot Solve', solvingerror)
 
     def enterInitialState(self, event=None):
         global initialState, statepointer
@@ -206,10 +208,11 @@ class InterfaceApp:
 
     def printSearchAnalysis(self, event=None):
         if self.solved():
-            analytics = 'Analysis of ' + str(algorithm) + ' search\n'\
-                  'initial state = ' + str(initialState) + '\n'\
-                  '-------------------------------\n'\
-                  'Nodes expanded: ' + str(counter) + '\n' + 'Search depth: ' + str(depth)
+            analytics = 'Analysis of ' + str(algorithm) + ' search\n' \
+                                                          'initial state = ' + str(initialState) + '\n' \
+                                                                                                   '-------------------------------\n' \
+                                                                                                   'Nodes expanded: ' + str(
+                counter) + '\n' + 'Search depth: ' + str(depth)
             print(analytics + '\n-')
             messagebox.showinfo('Analysis', analytics)
 
@@ -247,15 +250,12 @@ class InterfaceApp:
             app.stepCount.after_cancel(app._job)
             app._job = None
 
-
-
     def resetStepCounter(self, event=None):
         global statepointer
         if statepointer > 0:
             self.stopFastForward()
             statepointer = 0
             self.updateGrid(self)
-
 
     def displayStateOnGrid(self, state):
         if not backend.validateState(state):
@@ -292,7 +292,8 @@ class InterfaceApp:
             path, cost, counter, depth = main.manhattan_path, main.manhattan_cost, main.manhattan_counter, main.manhattan_depth
         elif str(algorithm) == 'A* Euclidean':
             main.AStarSearch_euclid(initialState)
-            path, cost, counter, depth = main.euclid_path, main.euclid_cost, main.euclid_counter, round(main.euclid_depth)
+            path, cost, counter, depth = main.euclid_path, main.euclid_cost, main.euclid_counter, round(
+                main.euclid_depth)
         else:
             print('Error occurred')
 
@@ -335,7 +336,6 @@ class InterfaceApp:
         else:
             app.fastforwardbutton.configure(state='enabled')
             app.nextbutton.configure(state='enabled')
-
 
 
 if __name__ == "__main__":
