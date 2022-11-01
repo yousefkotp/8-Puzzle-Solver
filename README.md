@@ -138,7 +138,7 @@ def getEuclideanDistance(state):
 ## Analysis for Different Algorithms.
 <table align="center">
   <tr>
-    <th>Fucntion</th>
+    <th>Algorithm</th>
     <th>Cost of Path</th>
     <th>Nodes Expanded</th>
     <th>Search Depth</th>
@@ -151,7 +151,7 @@ def getEuclideanDistance(state):
     <td>DFS</td>
   </tr>
   <tr>
-    <td>A* Manhatten</td>
+    <td>A* Manhattan</td>
   </tr>
   <tr>
     <td>A* Euclidean</td>
