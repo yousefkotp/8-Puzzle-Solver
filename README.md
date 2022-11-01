@@ -191,6 +191,7 @@ def getEuclideanDistance(state):
     <td>0.513s</td>
   </tr>
 </table>
+
 - In the last test case, the DFS algorithm was lucky enough to have search depth = search cost, usually the algorithm will have higher search depth than search cost.
 
 ## Contributors
