@@ -192,7 +192,7 @@ def getEuclideanDistance(state):
   </tr>
 </table>
 
-- In the last test case, the DFS algorithm was lucky enough to have search depth = search cost, usually the algorithm will have higher search depth than search cost.
+- In the last test case, the DFS algorithm was lucky enough to have search depth = cost of path, usually the algorithm will have higher search depth than cost of path.
 
 ## Contributors
 1- [Yousef Kotp](https://github.com/yousefkotp)\
