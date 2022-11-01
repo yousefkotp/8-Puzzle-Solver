@@ -1,6 +1,7 @@
 import heapq
 import math
 import time
+
 dx = [-1, 1, 0, 0]
 dy = [0, 0, 1, -1]
 
@@ -24,15 +25,10 @@ bfs_depth = 0
 euclid_depth = 0
 manhattan_depth = 0
 
-time_dfs=0
-time_bfs=0
-time_euclid=0
-time_manhattan=0
-
-
-
-
-
+time_dfs = 0
+time_bfs = 0
+time_euclid = 0
+time_manhattan = 0
 
 
 def getStringRepresentation(x):
@@ -68,6 +64,7 @@ def getPath(parentMap, inputState):
     path.reverse()
     return path
 
+
 def printPath(path):
     for i in path:
         print(getStringRepresentation(i))
@@ -89,7 +86,7 @@ def isSolvable(digit):
 
 
 def BFS(inputState):
-    start_time=time.time()
+    start_time = time.time()
     q = []
     explored = {}
     parent = {}
@@ -115,7 +112,7 @@ def BFS(inputState):
             bfs_counter = cnt
             bfs_path = path
             bfs_cost = len(path) - 1
-            time_bfs=float( time.time() - start_time )
+            time_bfs = float(time.time() - start_time)
             return 1
 
         children = getChildren(getStringRepresentation(state))
@@ -129,7 +126,7 @@ def BFS(inputState):
     bfs_path = []
     bfs_cost = 0
     bfs_counter = cnt
-    time_bfs =float( time.time() - start_time )
+    time_bfs = float(time.time() - start_time)
     return 0
 
 
@@ -137,7 +134,7 @@ def DFS(inputState):
     # if not isSolvable(inputState):
     #     print("Not Solvable")
     #     return 0
-    start_time=time.time()
+    start_time = time.time()
     stack = []
     explored = {}
     parent = {}
@@ -165,7 +162,7 @@ def DFS(inputState):
             dfs_counter = cnt
             dfs_path = path
             dfs_cost = len(path) - 1
-            time_dfs = float( time.time() - start_time )
+            time_dfs = float(time.time() - start_time)
             return 1
 
         children = getChildren(getStringRepresentation(state))
@@ -179,7 +176,7 @@ def DFS(inputState):
     dfs_path = []
     dfs_cost = 0
     dfs_counter = cnt
-    time_dfs = float( time.time() - start_time )
+    time_dfs = float(time.time() - start_time)
     return 0
 
 
@@ -217,7 +214,7 @@ def AStarSearch_manhattan(inputState):
     # if not isSolvable(inputState):
     #     print("Not Solvable")
     #     return 0
-    start_time=time.time()
+    start_time = time.time()
     integer_state = int(inputState)
     heap = []
     explored = {}
@@ -248,7 +245,7 @@ def AStarSearch_manhattan(inputState):
             manhattan_path = path
             manhattan_counter = (len(explored))
             manhattan_cost = len(path) - 1
-            time_manhattan = float( time.time() - start_time )
+            time_manhattan = float(time.time() - start_time)
 
             return 1
 
@@ -269,7 +266,7 @@ def AStarSearch_manhattan(inputState):
     manhattan_cost = 0
     manhattan_path = []
     manhattan_counter = (len(explored))
-    time_manhattan = float( time.time() - start_time )
+    time_manhattan = float(time.time() - start_time)
 
     return 0
 
@@ -278,7 +275,7 @@ def AStarSearch_euclid(inputState):
     # if not isSolvable(inputState):
     #     print("Not Solvable")
     #     return 0
-    start_time=time.time()
+    start_time = time.time()
     integer_state = int(inputState)
     heap = []
     explored = {}
@@ -309,7 +306,7 @@ def AStarSearch_euclid(inputState):
             euclid_path = path
             euclid_counter = (len(explored))
             euclid_cost = len(path) - 1
-            time_euclid = float( time.time() - start_time )
+            time_euclid = float(time.time() - start_time)
 
             return 1
 
@@ -330,7 +327,7 @@ def AStarSearch_euclid(inputState):
     euclid_cost = 0
     euclid_path = []
     euclid_counter = (len(explored))
-    time_euclid = float( time.time() - start_time )
+    time_euclid = float(time.time() - start_time)
 
     return 0
 
@@ -339,16 +336,14 @@ def AStarSearch_euclid(inputState):
 #     print(1)
 # print(start_time-time.time())
 
-print(DFS("702853641"))
-print(time_dfs)
-print(BFS("702853641"))
-print(time_bfs)
-print(AStarSearch_euclid("702853641"))
-print(time_euclid)
-print(AStarSearch_manhattan("702853641"))
-print(time_manhattan)
-
-
+# print(DFS("702853641"))
+# print(time_dfs)
+# print(BFS("702853641"))
+# print(time_bfs)
+# print(AStarSearch_euclid("702853641"))
+# print(time_euclid)
+# print(AStarSearch_manhattan("702853641"))
+# print(time_manhattan)
 
 
 # unsolvable 103245678, 702853641

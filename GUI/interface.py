@@ -9,6 +9,7 @@ import main
 algorithm = None
 initialState = None
 statepointer = cost = counter = depth = 0
+runtime = 0.0
 path = []
 
 
@@ -69,18 +70,28 @@ class InterfaceApp:
 
         self.contributorsbutton = ttk.Button(self.appFrame)
         self.contributorsbutton.configure(cursor="hand2", text='Contributors')
-        self.contributorsbutton.place(anchor="n", width=150, x=700, y=500)
+        self.contributorsbutton.place(anchor="n", width=150, x=700, y=510)
         self.contributorsbutton.bind("<ButtonPress>", self.showContributors)
 
         self.solvebutton = ttk.Button(self.appFrame)
-        self.solvebutton.configure(cursor="hand2", text='Solve')
-        self.solvebutton.place(anchor="s", height=150, width=150, x=700, y=230)
+        self.img_solveicon = tk.PhotoImage(file="solve-icon.png")
+        self.solvebutton.configure(cursor="hand2", text='Solve', image=self.img_solveicon, compound="top")
+        self.solvebutton.place(anchor="s", height=150, width=150, x=700, y=200)
         self.solvebutton.bind("<ButtonPress>", self.solve)
 
         self.algorithmbox = ttk.Combobox(self.appFrame)
-        self.algorithmbox.configure(cursor="hand2", values=('BFS', 'DFS', 'A* Manhattan', 'A* Euclidean'))
-        self.algorithmbox.place(anchor="center", height=30, width=150, x=700, y=260)
+        self.algorithmbox.configure(cursor="hand2", state="readonly",
+                                    values=('BFS', 'DFS', 'A* Manhattan', 'A* Euclidean'))
+        self.algorithmbox.place(anchor="center", height=30, width=150, x=700, y=230)
         self.algorithmbox.bind("<<ComboboxSelected>>", self.selectAlgorithm)
+
+        self.algolabel = ttk.Label(self.appFrame)
+        self.algolabel.configure(anchor="center", text='Search Algorithm:')
+        self.algolabel.place(anchor="center", x=570, y=230)
+
+        self.analysisbox = ttk.Label(self.appFrame)
+        self.analysisbox.configure(anchor="center", text='', background="#d6d6d6", borderwidth=3, relief="sunken")
+        self.analysisbox.place(anchor="center", width=150, height=210, x=700, y=400)
 
         self.cell0 = ttk.Label(self.appFrame)
         self.cell0.configure(anchor="center", background="#5aadad", borderwidth=3,
@@ -129,19 +140,14 @@ class InterfaceApp:
 
         self.enterstatebutton = ttk.Button(self.appFrame)
         self.enterstatebutton.configure(cursor="hand2", text='Enter initial state')
-        self.enterstatebutton.place(anchor="n", width=150, x=700, y=290)
+        self.enterstatebutton.place(anchor="n", width=150, x=700, y=260)
         self.enterstatebutton.bind("<ButtonPress>", self.enterInitialState)
-
-        self.analysisbutton = ttk.Button(self.appFrame)
-        self.analysisbutton.configure(cursor="hand2", text='Show search analysis')
-        self.analysisbutton.place(anchor="n", width=150, x=700, y=330)
-        self.analysisbutton.bind("<ButtonPress>", self.printSearchAnalysis)
 
         self.mainwindow = self.appFrame
 
     def run(self):
         app.displayStateOnGrid('000000000')
-        self.updateGrid(self)
+        self.updateGrid()
         self.mainwindow.mainloop()
 
     def prevSequence(self, event=None):
@@ -149,14 +155,14 @@ class InterfaceApp:
         if statepointer > 0:
             self.stopFastForward()
             statepointer -= 1
-            self.updateGrid(self)
+            self.updateGrid()
 
     def nextSequence(self, event=None):
         global statepointer
         if statepointer < len(path) - 1:
             self.stopFastForward()
             statepointer += 1
-            self.updateGrid(self)
+            self.updateGrid()
 
     def solve(self, event=None):
         global algorithm, initialState
@@ -171,11 +177,11 @@ class InterfaceApp:
                 self.reset()
             else:
                 print('<!> Solved!')
-                self.updateGrid(self)
+                self.updateGrid()
         else:
-            solvingerror = 'Cannot solve.\n'\
-                        'Algorithm in use: ' + str(algorithm) + '\n'\
-                        'Initial State   : ' + str(initialState)
+            solvingerror = 'Cannot solve.\n' \
+                           'Algorithm in use: ' + str(algorithm) + '\n' \
+                                                                   'Initial State   : ' + str(initialState)
             print(solvingerror + '\n-')
             messagebox.showerror('Cannot Solve', solvingerror)
 
@@ -185,8 +191,8 @@ class InterfaceApp:
         if inputState is not None:
             if backend.validateState(inputState):
                 initialState = inputState
+                self.reset()
                 app.displayStateOnGrid(initialState)
-                statepointer = 0
             else:
                 print('Invalid initial state')
                 messagebox.showerror('Input Error', 'Invalid initial state')
@@ -205,15 +211,18 @@ class InterfaceApp:
                                             "6905   -   Mohamed Farid Abdelaziz\n"
                                             "7140   -   Yousef Ashraf Kotp\n")
 
-    def printSearchAnalysis(self, event=None):
+    def displaySearchAnalysis(self):
         if self.solved():
-            analytics = 'Analysis of ' + str(algorithm) + ' search\n' \
-                                                          'initial state = ' + str(initialState) + '\n' \
-                                                                                                   '-------------------------------\n' \
-                                                                                                   'Nodes expanded: ' + str(
-                counter) + '\n' + 'Search depth: ' + str(depth)
-            print(analytics + '\n-')
-            messagebox.showinfo('Analysis', analytics)
+            analytics = 'Analysis of ' + str(algorithm) + \
+                        '\ninitial state = ' + str(initialState) + \
+                        '\n-------------------------------' \
+                        '\n' + 'Nodes expanded: \n' + str(counter) + \
+                        '\n' + 'Search depth: \n' + str(depth) + \
+                        '\n' + 'Search cost: \n' + str(cost) + \
+                        '\n' + 'Running Time: \n' + str(runtime) + ' s'
+        else:
+            analytics = ''
+        app.analysisbox.configure(text=analytics)
 
     def fastForward(self, event=None):
         global statepointer
@@ -221,8 +230,10 @@ class InterfaceApp:
         if statepointer < cost:
             app.stopbutton.configure(state='enabled')
             statepointer += 1
-            self.updateGrid(self)
-            ms = 50
+            self.updateGrid()
+            ms = 100
+            if 100 < cost <= 1000:
+                ms = 20
             if cost > 1000:
                 ms = 1
             app._job = app.stepCount.after(ms, self.fastForward)
@@ -241,7 +252,7 @@ class InterfaceApp:
             app._job = app.stepCount.after(ms, self.fastBackward)
         else:
             self.stopFastForward()
-        self.updateGrid(self)
+        self.updateGrid()
 
     def stopFastForward(self, event=None):
         if app._job is not None:
@@ -254,7 +265,7 @@ class InterfaceApp:
         if statepointer > 0:
             self.stopFastForward()
             statepointer = 0
-            self.updateGrid(self)
+            self.updateGrid()
 
     def displayStateOnGrid(self, state):
         if not backend.validateState(state):
@@ -279,51 +290,55 @@ class InterfaceApp:
 
     @staticmethod
     def solveState():
-        global path, cost, counter, depth
+        global path, cost, counter, depth, runtime
         if str(algorithm) == 'BFS':
             main.BFS(initialState)
-            path, cost, counter, depth = main.bfs_path, main.bfs_cost, main.bfs_counter, main.bfs_depth
+            path, cost, counter, depth, runtime = \
+                main.bfs_path, main.bfs_cost, main.bfs_counter, main.bfs_depth, main.time_bfs
         elif str(algorithm) == 'DFS':
             main.DFS(initialState)
-            path, cost, counter, depth = main.dfs_path, main.dfs_cost, main.dfs_counter, main.dfs_depth
+            path, cost, counter, depth, runtime = \
+                main.dfs_path, main.dfs_cost, main.dfs_counter, main.dfs_depth, main.time_dfs
         elif str(algorithm) == 'A* Manhattan':
             main.AStarSearch_manhattan(initialState)
-            path, cost, counter, depth = main.manhattan_path, main.manhattan_cost, main.manhattan_counter, main.manhattan_depth
+            path, cost, counter, depth, runtime = \
+                main.manhattan_path, main.manhattan_cost, main.manhattan_counter, main.manhattan_depth, main.time_manhattan
         elif str(algorithm) == 'A* Euclidean':
             main.AStarSearch_euclid(initialState)
-            path, cost, counter, depth = main.euclid_path, main.euclid_cost, main.euclid_counter, round(
-                main.euclid_depth)
+            path, cost, counter, depth, runtime = \
+                main.euclid_path, main.euclid_cost, main.euclid_counter, round(main.euclid_depth), main.time_euclid
         else:
             print('Error occurred')
 
     def resetGrid(self):
         global statepointer
         statepointer = 0
-        self.updateGrid(self)
+        self.updateGrid()
         app.stepCount.configure(text=self.getStepCount())
 
     def reset(self):
-        global statepointer, path, cost, counter
-        statepointer = cost = counter = 0
+        global path, cost, counter, runtime
+        cost = counter = 0
+        runtime = 0.0
         path = []
         self.resetGrid()
+        app.analysisbox.configure(text='')
 
     @staticmethod
     def getStepCount():
         return str(statepointer) + ' / ' + str(cost)
 
     @staticmethod
-    def updateGrid(self):
+    def updateGrid():
         if cost > 0:
             state = main.getStringRepresentation(path[statepointer])
             app.displayStateOnGrid(state)
-            app.stepCount.configure(text=self.getStepCount())
+            app.stepCount.configure(text=app.getStepCount())
+            app.displaySearchAnalysis()
         if statepointer == 0:
             app.resetbutton.configure(state='disabled')
             app.backbutton.configure(state='disabled')
             app.fastbackwardbutton.configure(state='disabled')
-        elif statepointer == cost:
-            app.backbutton.configure(state='disabled')
         else:
             app.resetbutton.configure(state='enabled')
             app.backbutton.configure(state='enabled')
