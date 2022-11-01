@@ -3,23 +3,48 @@
 ## Table of Content
 - [8-Puzzle-Solver](#8-puzzle-solver)
   * [Deployment](#deployment)
+  * [Data Structure Used](#data-structure-used)
+    + [DFS](#dfs)
+    + [BFS](#bfs)
+    + [A*](#a-)
   * [State Representation](#state-representation)
   * [Algorithms Used](#algorithms-used)
-    + [BFS](#bfs)
-    + [DFS](#dfs)
-    + [A*](#a)
+    + [BFS](#bfs-1)
+    + [DFS](#dfs-1)
+    + [A*](#a--1)
       - [Heuristic Functions](#heuristic-functions)
         * [Manhattan Distance](#manhattan-distance)
         * [Euclidean Distance](#euclidean-distance)
-        * [Which One is better?](#which-one-is-better)
+        * [Which One is better?](#which-one-is-better-)
   * [Analysis for Different Algorithms.](#analysis-for-different-algorithms)
+  * [Graphical Interface](#graphical-interface)
   * [Contributors](#contributors)
+  
 ## Deployment
 - The project was built using [Python 3.9](https://www.python.org/downloads/release/python-390/), make sure you configure your python interpreter correctly
 - You should run the "interface.py" python file inside the "GUI" folder, you can do that by running the following command inside the "GUI" folder
  ```bash
   python interface.py
  ```
+
+## Data Structure Used
+
+### DFS
+- Stack to store the states in frontier
+- Map to check if the state is explored or not
+- Map to get the parent of each state (used to get path)
+- Map to get the cost of each state
+### BFS
+- Queue to store the states in frontier
+- Map to check if the state is explored or not
+- Map to check if the state is in frontier or not
+- Map to get the parent of each state (used to get path)
+- Map to get the cost of each state
+### A*
+- Priority Queue to store the states in frontier
+- Map to check if the state is explored or not
+- Map to get the parent of each state (used to get path)
+- Map to get the cost of each state
 
 ## State Representation
 - The state is represented as a single number starting from first row and first column as the most significant digit, and the bottom right as least significant digit, so the following state is represented as the number "102345678"
@@ -193,6 +218,9 @@ def getEuclideanDistance(state):
 </table>
 
 - In the last test case, the DFS algorithm was lucky enough to have search depth = cost of path, usually the algorithm will have higher search depth than cost of path.
+## Graphical Interface
+
+![image](https://user-images.githubusercontent.com/41492875/199296576-d3a2f02f-df99-499c-b9cc-85bddb3f46dc.png)
 
 ## Contributors
 1- [Yousef Kotp](https://github.com/yousefkotp)\
