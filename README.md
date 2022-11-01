@@ -141,8 +141,11 @@ def getManhattanDistance(state):
     return sum
 ```
 ##### Euclidean Distance
-- It is the distance between the current cell and the goal cell using the distance formula
-    $\sqrt{(current cell\ X\  axis - goal\ X\ axis)^2+(current cell\ Y\ axis - goal\ Y\ axis)^2}$
+- It is the distance between the current cell and the goal cell using the following formula
+    
+    ![image](https://user-images.githubusercontent.com/41492875/199301510-907d43f7-c97a-45a0-9927-1f56c9660cae.png)
+
+
 - The value of Euclidean Distance function for each state is done through this function
 ```python
 def getEuclideanDistance(state):
