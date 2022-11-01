@@ -136,6 +136,24 @@ def getEuclideanDistance(state):
 - According to the analysis done in [Analysis Section](#analysis-for-different-algorithms), Manhatten Distance is a better admissible function at it expands less number of states than Euclidean Distance.
 
 ## Analysis for Different Algorithms.
+- For the following random test case:
+<table align="center">
+  <tr>
+    <td>7</td>
+    <td>0</td>
+    <td>2</td>
+  </tr>
+  <tr>
+    <td>8</td>
+    <td>5</td>
+    <td>3</td>
+  </tr>
+  <tr>
+    <td>6</td>
+    <td>1</td>
+    <td>4</td>
+  </tr>
+</table>
 <table align="center">
   <tr>
     <th>Algorithm</th>
@@ -146,17 +164,34 @@ def getEuclideanDistance(state):
   </tr>
   <tr>
     <td>BFS</td>
+    <td>27</td>
+    <td>174386</td>
+    <td>27</td>
+    <td>1.27s</td>
   </tr>
   <tr>
     <td>DFS</td>
+    <td>54497</td>
+    <td>63397</td>
+    <td>54497</td>
+    <td>0.29s</td>
   </tr>
   <tr>
     <td>A* Manhattan</td>
+    <td>27</td>
+    <td>3495</td>
+    <td>27</td>
+    <td>0.07s</td>
   </tr>
   <tr>
     <td>A* Euclidean</td>
+    <td>27</td>
+    <td>11639</td>
+    <td>27</td>
+    <td>0.513s</td>
   </tr>
 </table>
+- In the last test case, the DFS algorithm was lucky enough to have search depth = search cost, usually the algorithm will have higher search depth than search cost.
 
 ## Contributors
 1- [Yousef Kotp](https://github.com/yousefkotp)\
