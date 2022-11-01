@@ -23,8 +23,8 @@ class InterfaceApp:
         self.appFrame.pack(side="top")
 
         self.mainlabel = ttk.Label(self.appFrame)
-        self.mainlabel.configure(anchor="center", font="{Forte} 36 {bold}", foreground="#003e3e", justify="center",
-                                 text='8-Puzzle Solver')
+        self.mainlabel.configure(
+            anchor="center", font="{Forte} 36 {bold}", foreground="#003e3e", justify="center", text='8-Puzzle Solver')
         self.mainlabel.place(anchor="center", x=300, y=50)
 
         self.backbutton = ttk.Button(self.appFrame)
@@ -78,6 +78,8 @@ class InterfaceApp:
         self.solvebutton.configure(cursor="hand2", text='Solve', image=self.img_solveicon, compound="top")
         self.solvebutton.place(anchor="s", height=150, width=150, x=700, y=200)
         self.solvebutton.bind("<ButtonPress>", self.solve)
+
+        self.gif_loading = tk.Label(self.appFrame)
 
         self.algorithmbox = ttk.Combobox(self.appFrame)
         self.algorithmbox.configure(cursor="hand2", state="readonly",
@@ -139,16 +141,30 @@ class InterfaceApp:
         self.cell8.place(anchor="center", height=100, width=100, x=400, y=350)
 
         self.enterstatebutton = ttk.Button(self.appFrame)
-        self.enterstatebutton.configure(cursor="hand2", text='Enter initial state')
-        self.enterstatebutton.place(anchor="n", width=150, x=700, y=260)
+        self.img_inputicon = tk.PhotoImage(file="input-icon.png")
+        self.enterstatebutton.configure(
+            cursor="hand2", text='Enter initial state', image=self.img_inputicon, compound="left")
+        self.enterstatebutton.place(anchor="n", width=150, x=700, y=250)
         self.enterstatebutton.bind("<ButtonPress>", self.enterInitialState)
 
         self.mainwindow = self.appFrame
 
+        self.gif = [tk.PhotoImage(file='loading.gif', format='gif -index %i' % i) for i in range(10)]
+
+
     def run(self):
         app.displayStateOnGrid('000000000')
+        app.gif_loading.place_forget()
         self.updateGrid()
+        self.mainwindow.after(0, app.update, 0)
         self.mainwindow.mainloop()
+
+    @staticmethod
+    def update(ind):
+        frame = app.gif[ind]
+        ind = (ind + 1) % 10
+        app.gif_loading.configure(image=frame)
+        app.appFrame.after(50, app.update, ind)
 
     def prevSequence(self, event=None):
         global statepointer
@@ -166,15 +182,16 @@ class InterfaceApp:
 
     def solve(self, event=None):
         global algorithm, initialState
+        app.gif_loading.place(x=600, y=125, anchor="s")
         if self.readyToSolve():
+            msg = 'Algorithm: ' + str(algorithm) + '\nInitial State = ' + str(initialState)
+            messagebox.showinfo('Confirm', msg)
             self.resetGrid()
-            print('Running ' + str(algorithm))
             self.solveState()
             if len(path) == 0:
                 print('<!> Unsolvable State')
                 messagebox.showinfo('Unsolvable!', 'The state you entered is unsolvable')
-                initialState = None
-                self.reset()
+                self.displaySearchAnalysis(True)
             else:
                 print('<!> Solved!')
                 self.updateGrid()
@@ -184,6 +201,7 @@ class InterfaceApp:
                                                                    'Initial State   : ' + str(initialState)
             print(solvingerror + '\n-')
             messagebox.showerror('Cannot Solve', solvingerror)
+        app.gif_loading.place_forget()
 
     def enterInitialState(self, event=None):
         global initialState, statepointer
@@ -211,15 +229,17 @@ class InterfaceApp:
                                             "6905   -   Mohamed Farid Abdelaziz\n"
                                             "7140   -   Yousef Ashraf Kotp\n")
 
-    def displaySearchAnalysis(self):
-        if self.solved():
+    def displaySearchAnalysis(self, force_display=False):
+        if self.solved() or force_display is True:
             analytics = 'Analysis of ' + str(algorithm) + \
-                        '\ninitial state = ' + str(initialState) + \
-                        '\n-------------------------------' \
-                        '\n' + 'Nodes expanded: \n' + str(counter) + \
-                        '\n' + 'Search depth: \n' + str(depth) + \
-                        '\n' + 'Search cost: \n' + str(cost) + \
-                        '\n' + 'Running Time: \n' + str(runtime) + ' s'
+                        '\ninitial state = ' + str(initialState)
+            if force_display:
+                analytics += '\n< UNSOLVABLE >'
+            analytics += '\n-------------------------------' \
+                         '\n' + 'Nodes expanded: \n' + str(counter) + \
+                         '\n' + 'Search depth: \n' + str(depth) + \
+                         '\n' + 'Search cost: \n' + str(cost) + \
+                         '\n' + 'Running Time: \n' + str(runtime) + ' s'
         else:
             analytics = ''
         app.analysisbox.configure(text=analytics)
