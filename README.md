@@ -6,7 +6,7 @@
   * [Data Structure Used](#data-structure-used)
     + [DFS](#dfs)
     + [BFS](#bfs)
-    + [A*](#a-)
+    + [A*](#a)
   * [State Representation](#state-representation)
   * [Algorithms Used](#algorithms-used)
     + [BFS](#bfs-1)
@@ -15,7 +15,7 @@
       - [Heuristic Functions](#heuristic-functions)
         * [Manhattan Distance](#manhattan-distance)
         * [Euclidean Distance](#euclidean-distance)
-        * [Which One is better?](#which-one-is-better-)
+        * [Which One is better?](#which-one-is-better)
   * [Analysis for Different Algorithms.](#analysis-for-different-algorithms)
   * [Graphical Interface](#graphical-interface)
   * [Contributors](#contributors)
@@ -226,6 +226,8 @@ def getEuclideanDistance(state):
 ![image](https://user-images.githubusercontent.com/41492875/199296576-d3a2f02f-df99-499c-b9cc-85bddb3f46dc.png)
 
 ## Contributors
-1- [Yousef Kotp](https://github.com/yousefkotp)\
-2- [Adham Mohammed](https://github.com/adhammohamed1)\
+1- [Yousef Kotp](https://github.com/yousefkotp)
+
+2- [Adham Mohammed](https://github.com/adhammohamed1)
+
 3- [Mohammed Farid](https://github.com/MohamedFarid612)
