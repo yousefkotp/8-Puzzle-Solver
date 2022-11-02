@@ -11,7 +11,7 @@
   * [Algorithms Used](#algorithms-used)
     + [BFS](#bfs-1)
     + [DFS](#dfs-1)
-    + [A*](#a--1)
+    + [A*](#a-1)
       - [Heuristic Functions](#heuristic-functions)
         * [Manhattan Distance](#manhattan-distance)
         * [Euclidean Distance](#euclidean-distance)
