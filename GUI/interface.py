@@ -3,9 +3,9 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import messagebox, simpledialog
 
-import backend
 import main
 
+### Global Variables to store the solution analytics ###
 algorithm = None
 initialState = None
 statepointer = cost = counter = depth = 0
@@ -14,6 +14,9 @@ path = []
 
 
 class InterfaceApp:
+
+    # =============================================================================================================== #
+    ###     Build the GUI     ###
 
     def __init__(self, master=None):
 
@@ -151,36 +154,54 @@ class InterfaceApp:
 
         self.gif = [tk.PhotoImage(file='loading.gif', format='gif -index %i' % i) for i in range(10)]
 
-
     def run(self):
+        """
+        Run the program, display the GUI
+        """
         app.displayStateOnGrid('000000000')
         app.gif_loading.place_forget()
-        self.updateGrid()
-        self.mainwindow.after(0, app.update, 0)
+        self.refreshFrame()
+        self.mainwindow.after(0, app.refreshGIF, 0)
         self.mainwindow.mainloop()
 
+    # =============================================================================================================== #
+    ###     Widget Methods     ###
+
     @staticmethod
-    def update(ind):
+    def refreshGIF(ind):
+        """
+        Refreshes the loading gif to show the next frame
+        """
         frame = app.gif[ind]
         ind = (ind + 1) % 10
         app.gif_loading.configure(image=frame)
-        app.appFrame.after(50, app.update, ind)
+        app.appFrame.after(50, app.refreshGIF, ind)
 
     def prevSequence(self, event=None):
+        """
+        Displays the previous state on the grid
+        """
         global statepointer
         if statepointer > 0:
             self.stopFastForward()
             statepointer -= 1
-            self.updateGrid()
+            self.refreshFrame()
 
     def nextSequence(self, event=None):
+        """
+        Displays the next state on the grid
+        """
         global statepointer
         if statepointer < len(path) - 1:
             self.stopFastForward()
             statepointer += 1
-            self.updateGrid()
+            self.refreshFrame()
 
     def solve(self, event=None):
+        """
+        Function is invoked at pressing the solve button. Solves the puzzle with the given initialState and algorithm
+        then gives a suitable response to the user
+        """
         global algorithm, initialState
         app.gif_loading.place(x=600, y=125, anchor="s")
         if self.readyToSolve():
@@ -189,47 +210,117 @@ class InterfaceApp:
             self.resetGrid()
             self.solveState()
             if len(path) == 0:
-                print('<!> Unsolvable State')
                 messagebox.showinfo('Unsolvable!', 'The state you entered is unsolvable')
                 self.displaySearchAnalysis(True)
             else:
-                print('<!> Solved!')
-                self.updateGrid()
+                self.refreshFrame()
         else:
             solvingerror = 'Cannot solve.\n' \
                            'Algorithm in use: ' + str(algorithm) + '\n' \
                                                                    'Initial State   : ' + str(initialState)
-            print(solvingerror + '\n-')
             messagebox.showerror('Cannot Solve', solvingerror)
         app.gif_loading.place_forget()
 
     def enterInitialState(self, event=None):
+        """
+        Invoked at pressing enter initial state button. Displays a simple dialog box for the user to enter their
+        initial state. The state is validated and a suitable response it displayed to the user
+        """
         global initialState, statepointer
         inputState = simpledialog.askstring('Initial State Entry', 'Please enter your initial state')
         if inputState is not None:
-            if backend.validateState(inputState):
+            if self.validateState(inputState):
                 initialState = inputState
                 self.reset()
                 app.displayStateOnGrid(initialState)
             else:
-                print('Invalid initial state')
                 messagebox.showerror('Input Error', 'Invalid initial state')
 
     def selectAlgorithm(self, event=None):
+        """
+        Invoked at activating the algorithms combobox. Associates the chosen value to the global variable 'algorithm'
+        """
         global algorithm
         try:
             choice = self.algorithmbox.selection_get()
             self.reset()
             algorithm = choice
         except:
-            print('Invalid algorithm selection')
+            pass
+
+    def fastForward(self, event=None):
+        """
+        Invoked at pressing fast-forward button. Displays following states in rapid succession until it reaches the
+        goal state or until terminated by the stopFastForward() method
+        """
+        global statepointer
+        self.stopFastForward()
+        if statepointer < cost:
+            app.stopbutton.configure(state='enabled')
+            statepointer += 1
+            self.refreshFrame()
+            ms = 100
+            if 100 < cost <= 1000:
+                ms = 20
+            if cost > 1000:
+                ms = 1
+            app._job = app.stepCount.after(ms, self.fastForward)
+        else:
+            self.stopFastForward()
+
+    def fastBackward(self, event=None):
+        """
+        Invoked at pressing fast-backward button. Displays previous states in rapid succession until it reaches the
+        goal state or until terminated by the stopFastForward() method
+        """
+        global statepointer
+        self.stopFastForward()
+        if statepointer > 0:
+            app.stopbutton.configure(state='enabled')
+            statepointer -= 1
+            ms = 50
+            if cost > 1000:
+                ms = 1
+            app._job = app.stepCount.after(ms, self.fastBackward)
+        else:
+            self.stopFastForward()
+        self.refreshFrame()
+
+    @staticmethod
+    def stopFastForward(event=None):
+        """
+        Invoked at pressing stop fast-forward/backward button. Stops fast-forward/backward
+        """
+        if app._job is not None:
+            app.stopbutton.configure(state='disabled')
+            app.stepCount.after_cancel(app._job)
+            app._job = None
+
+    def resetStepCounter(self, event=None):
+        """
+        Invoked at pressing reset button. Resets the grid to the initial state and the step counter to 0
+        """
+        global statepointer
+        if statepointer > 0:
+            self.stopFastForward()
+            statepointer = 0
+            self.refreshFrame()
 
     def showContributors(self, event=None):
+        """
+        Invoked at pressing the contributors button. Displays a message box Containing names and IDs of contributors
+        """
         messagebox.showinfo('Contributors', "6744   -   Adham Mohamed Aly\n"
                                             "6905   -   Mohamed Farid Abdelaziz\n"
                                             "7140   -   Yousef Ashraf Kotp\n")
 
+    # =============================================================================================================== #
+    ###     Helper Functions     ###
+
     def displaySearchAnalysis(self, force_display=False):
+        """
+        Displays the analysis of the search algorithm after execution.
+        """
         if self.solved() or force_display is True:
             analytics = 'Analysis of ' + str(algorithm) + \
                         '\ninitial state = ' + str(initialState)
@@ -244,72 +335,45 @@ class InterfaceApp:
             analytics = ''
         app.analysisbox.configure(text=analytics)
 
-    def fastForward(self, event=None):
-        global statepointer
-        self.stopFastForward()
-        if statepointer < cost:
-            app.stopbutton.configure(state='enabled')
-            statepointer += 1
-            self.updateGrid()
-            ms = 100
-            if 100 < cost <= 1000:
-                ms = 20
-            if cost > 1000:
-                ms = 1
-            app._job = app.stepCount.after(ms, self.fastForward)
-        else:
-            self.stopFastForward()
-
-    def fastBackward(self, event=None):
-        global statepointer
-        self.stopFastForward()
-        if statepointer > 0:
-            app.stopbutton.configure(state='enabled')
-            statepointer -= 1
-            ms = 50
-            if cost > 1000:
-                ms = 1
-            app._job = app.stepCount.after(ms, self.fastBackward)
-        else:
-            self.stopFastForward()
-        self.updateGrid()
-
-    def stopFastForward(self, event=None):
-        if app._job is not None:
-            app.stopbutton.configure(state='disabled')
-            app.stepCount.after_cancel(app._job)
-            app._job = None
-
-    def resetStepCounter(self, event=None):
-        global statepointer
-        if statepointer > 0:
-            self.stopFastForward()
-            statepointer = 0
-            self.updateGrid()
-
     def displayStateOnGrid(self, state):
-        if not backend.validateState(state):
+        """
+        Display input state to the grid
+        :param state: String representation of the required state
+        """
+        if not self.validateState(state):
             state = '000000000'
-        self.cell0.configure(text=backend.adjustDigit(state[0]))
-        self.cell1.configure(text=backend.adjustDigit(state[1]))
-        self.cell2.configure(text=backend.adjustDigit(state[2]))
-        self.cell3.configure(text=backend.adjustDigit(state[3]))
-        self.cell4.configure(text=backend.adjustDigit(state[4]))
-        self.cell5.configure(text=backend.adjustDigit(state[5]))
-        self.cell6.configure(text=backend.adjustDigit(state[6]))
-        self.cell7.configure(text=backend.adjustDigit(state[7]))
-        self.cell8.configure(text=backend.adjustDigit(state[8]))
+        self.cell0.configure(text=self.adjustDigit(state[0]))
+        self.cell1.configure(text=self.adjustDigit(state[1]))
+        self.cell2.configure(text=self.adjustDigit(state[2]))
+        self.cell3.configure(text=self.adjustDigit(state[3]))
+        self.cell4.configure(text=self.adjustDigit(state[4]))
+        self.cell5.configure(text=self.adjustDigit(state[5]))
+        self.cell6.configure(text=self.adjustDigit(state[6]))
+        self.cell7.configure(text=self.adjustDigit(state[7]))
+        self.cell8.configure(text=self.adjustDigit(state[8]))
 
     @staticmethod
     def readyToSolve():
+        """
+        Checks if current state is ready to be solved by checking if the global variables 'initialState' and
+        'algorithm' are not None
+        :return: boolean
+        """
         return initialState is not None and algorithm is not None
 
     @staticmethod
     def solved():
+        """
+        Checks if there is a solution registered in the global variables
+        :return: boolean
+        """
         return len(path) > 0
 
     @staticmethod
     def solveState():
+        """
+        Solves the puzzle with 'initialState' and the chosen 'algorithm'. Assumes the current state is ready to solve.
+        """
         global path, cost, counter, depth, runtime
         if str(algorithm) == 'BFS':
             main.BFS(initialState)
@@ -327,16 +391,20 @@ class InterfaceApp:
             main.AStarSearch_euclid(initialState)
             path, cost, counter, depth, runtime = \
                 main.euclid_path, main.euclid_cost, main.euclid_counter, round(main.euclid_depth), main.time_euclid
-        else:
-            print('Error occurred')
 
     def resetGrid(self):
+        """
+        Resets the grid and step counter to the initial state
+        """
         global statepointer
         statepointer = 0
-        self.updateGrid()
-        app.stepCount.configure(text=self.getStepCount())
+        self.refreshFrame()
+        app.stepCount.configure(text=self.getStepCountString())
 
     def reset(self):
+        """
+        Resets global variables and the GUI frame. Removes currently registered solution
+        """
         global path, cost, counter, runtime
         cost = counter = 0
         runtime = 0.0
@@ -345,15 +413,22 @@ class InterfaceApp:
         app.analysisbox.configure(text='')
 
     @staticmethod
-    def getStepCount():
+    def getStepCountString():
+        """
+        Returns string representation of the step count to be displayed on the step-counter
+        :return: String
+        """
         return str(statepointer) + ' / ' + str(cost)
 
     @staticmethod
-    def updateGrid():
+    def refreshFrame():
+        """
+        Refreshes the frame with all its components: grid, counter, button, etc.
+        """
         if cost > 0:
             state = main.getStringRepresentation(path[statepointer])
             app.displayStateOnGrid(state)
-            app.stepCount.configure(text=app.getStepCount())
+            app.stepCount.configure(text=app.getStepCountString())
             app.displaySearchAnalysis()
         if statepointer == 0:
             app.resetbutton.configure(state='disabled')
@@ -370,6 +445,33 @@ class InterfaceApp:
         else:
             app.fastforwardbutton.configure(state='enabled')
             app.nextbutton.configure(state='enabled')
+
+    @staticmethod
+    def validateState(inputState):
+        """
+        Validates given state
+        :param inputState: String representation of state to be validated
+        :return: boolean
+        """
+        seen = []
+        if inputState is None or len(inputState) != 9 or not inputState.isnumeric():
+            return False
+        for dig in inputState:
+            if dig in seen or dig == '9':
+                return False
+            seen.append(dig)
+        return True
+
+    @staticmethod
+    def adjustDigit(dig):
+        """
+        Converts the zero to an empty cell. Otherwise, returns the digit as it is.
+        :param dig: Character of the digit to be adjusted
+        :return: string
+        """
+        if dig == '0':
+            return ' '
+        return dig
 
 
 if __name__ == "__main__":

@@ -6,7 +6,6 @@ import time
 dx = [-1, 1, 0, 0]
 dy = [0, 0, 1, -1]
 
-
 # Global variables holding algorithms
 dfs_counter = 0
 bfs_counter = 0
@@ -33,12 +32,14 @@ time_bfs = 0
 time_euclid = 0
 time_manhattan = 0
 
+
 # function to get String representation
 def getStringRepresentation(x):
     if int(math.log10(x)) + 1 == 9:
         return str(x)
     else:
         return "0" + str(x)
+
 
 # function to generate all valid children of a certain node
 def getChildren(state):
@@ -56,6 +57,7 @@ def getChildren(state):
             children.append(''.join(listTemp))
     return children
 
+
 # function to get the path to the goal state
 def getPath(parentMap, inputState):
     path = []
@@ -66,6 +68,7 @@ def getPath(parentMap, inputState):
     path.append(inputState)
     path.reverse()
     return path
+
 
 # function to print the path to goal
 def printPath(path):
@@ -79,6 +82,7 @@ def goalTest(state):
         return True
     return False
 
+
 # function to check if the start state solvable or not
 def isSolvable(digit):
     count = 0
@@ -87,6 +91,7 @@ def isSolvable(digit):
             if digit[i] > digit[j] and digit[i] != 9:
                 count += 1
     return count % 2 == 0
+
 
 # breadth first search algorithm
 def BFS(inputState):
@@ -181,11 +186,13 @@ def DFS(inputState):
     time_dfs = float(time.time() - start_time)
     return 0
 
+
 # function checking if state is valid or out of bounds
 def checkValid(i, j):
     if i >= 3 or i < 0 or j >= 3 or j < 0:
         return 0
     return 1
+
 
 # heuristic function using manhattan distance
 def getManhattanDistance(state):
@@ -198,6 +205,7 @@ def getManhattanDistance(state):
         itemY = idx % 3
         tot += (abs(goalX - itemX) + abs(goalY - itemY))
     return tot
+
 
 # heuristic function using manhattan distance
 
