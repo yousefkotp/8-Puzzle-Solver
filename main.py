@@ -2,9 +2,12 @@ import heapq
 import math
 import time
 
+# Used for states generation (getChildren())
 dx = [-1, 1, 0, 0]
 dy = [0, 0, 1, -1]
 
+
+# Global variables holding algorithms
 dfs_counter = 0
 bfs_counter = 0
 euclid_counter = 0
@@ -30,14 +33,14 @@ time_bfs = 0
 time_euclid = 0
 time_manhattan = 0
 
-
+# function to get String representation
 def getStringRepresentation(x):
     if int(math.log10(x)) + 1 == 9:
         return str(x)
     else:
         return "0" + str(x)
 
-
+# function to generate all valid children of a certain node
 def getChildren(state):
     children = []
     idx = state.index('0')
@@ -53,7 +56,7 @@ def getChildren(state):
             children.append(''.join(listTemp))
     return children
 
-
+# function to get the path to the goal state
 def getPath(parentMap, inputState):
     path = []
     temp = 12345678
@@ -64,18 +67,19 @@ def getPath(parentMap, inputState):
     path.reverse()
     return path
 
-
+# function to print the path to goal
 def printPath(path):
     for i in path:
         print(getStringRepresentation(i))
 
 
+# function to check the goal state
 def goalTest(state):
     if state == 12345678:
         return True
     return False
 
-
+# function to check if the start state solvable or not
 def isSolvable(digit):
     count = 0
     for i in range(0, 9):
@@ -84,8 +88,9 @@ def isSolvable(digit):
                 count += 1
     return count % 2 == 0
 
-
+# breadth first search algorithm
 def BFS(inputState):
+    # generating start states of variables and data structures used in the algorithm
     start_time = time.time()
     q = []
     explored = {}
@@ -114,7 +119,7 @@ def BFS(inputState):
             bfs_cost = len(path) - 1
             time_bfs = float(time.time() - start_time)
             return 1
-
+        # generating childeren
         children = getChildren(getStringRepresentation(state))
         for child in children:
             child_int = int(child)
@@ -131,15 +136,12 @@ def BFS(inputState):
 
 
 def DFS(inputState):
-    # if not isSolvable(inputState):
-    #     print("Not Solvable")
-    #     return 0
+    # generating start states of variables and data structures used in the algorithm
     start_time = time.time()
     stack = []
     explored = {}
     parent = {}
     parent_cost = {}
-
     integer_state = int(inputState)
     parent_cost[integer_state] = 0
     explored[integer_state] = 1
@@ -164,7 +166,7 @@ def DFS(inputState):
             dfs_cost = len(path) - 1
             time_dfs = float(time.time() - start_time)
             return 1
-
+        # generating childeren
         children = getChildren(getStringRepresentation(state))
         for child in children:
             child_int = int(child)
@@ -179,13 +181,13 @@ def DFS(inputState):
     time_dfs = float(time.time() - start_time)
     return 0
 
-
+# function checking if state is valid or out of bounds
 def checkValid(i, j):
     if i >= 3 or i < 0 or j >= 3 or j < 0:
         return 0
     return 1
 
-
+# heuristic function using manhattan distance
 def getManhattanDistance(state):
     tot = 0
     for i in range(1, 9):
@@ -197,6 +199,7 @@ def getManhattanDistance(state):
         tot += (abs(goalX - itemX) + abs(goalY - itemY))
     return tot
 
+# heuristic function using manhattan distance
 
 def getEuclideanDistance(state):
     tot = 0
@@ -211,9 +214,7 @@ def getEuclideanDistance(state):
 
 
 def AStarSearch_manhattan(inputState):
-    # if not isSolvable(inputState):
-    #     print("Not Solvable")
-    #     return 0
+    # generating start states of variables and data structures used in the algorithm
     start_time = time.time()
     integer_state = int(inputState)
     heap = []
@@ -235,6 +236,7 @@ def AStarSearch_manhattan(inputState):
         state = node[1]
         string_state = getStringRepresentation(state)
         parent_cost = node[0] - getManhattanDistance(string_state)
+        # handling the nodes that was renewed
         if not state in explored:
             manhattan_depth = max(parent_cost, manhattan_depth)
         explored[state] = 1
@@ -249,6 +251,7 @@ def AStarSearch_manhattan(inputState):
 
             return 1
 
+        # generating childeren
         children = getChildren(string_state)
         for child in children:
             new_cost = getManhattanDistance(child)
@@ -272,9 +275,7 @@ def AStarSearch_manhattan(inputState):
 
 
 def AStarSearch_euclid(inputState):
-    # if not isSolvable(inputState):
-    #     print("Not Solvable")
-    #     return 0
+    # generating start states of variables and data structures used in the algorithm
     start_time = time.time()
     integer_state = int(inputState)
     heap = []
@@ -296,6 +297,7 @@ def AStarSearch_euclid(inputState):
         state = node[1]
         string_state = getStringRepresentation(state)
         parent_cost = node[0] - getEuclideanDistance(string_state)
+        # handling the nodes that was renewed
         if not state in explored:
             euclid_depth = max(parent_cost, euclid_depth)
         explored[state] = 1
@@ -309,7 +311,7 @@ def AStarSearch_euclid(inputState):
             time_euclid = float(time.time() - start_time)
 
             return 1
-
+        # generating childeren
         children = getChildren(string_state)
         for child in children:
             new_cost = getEuclideanDistance(child)
