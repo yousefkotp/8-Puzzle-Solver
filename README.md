@@ -161,7 +161,7 @@ def getEuclideanDistance(state):
 ```
 ##### Which One is better?
 - Both of the heuristic functions used are admissible, but we want to know which one of them is better and more effiecient 
-- According to the analysis done in [Analysis Section](#analysis-for-different-algorithms), Manhatten Distance is a better admissible function at it expands less number of states than Euclidean Distance.
+- According to the analysis done in [Analysis Section](#analysis-for-different-algorithms), Manhatten Distance is a better admissible function at it expands less number of states than Euclidean Distance. That will result in making the values of Manhatten Distance function values closer to the optimal function much more than the Euclidean Distance.
 
 ## Analysis for Different Algorithms.
 - For the following random test case:
