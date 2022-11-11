@@ -31,20 +31,19 @@
 
 ### DFS
 - Stack to store the states in frontier
-- Map to check if the state is explored or not
-- Map to get the parent of each state (used to get path)
-- Map to get the cost of each state
+- Hash Map to check if the state is either in frontier or explored or not
+- Hash Map to get the parent of each state (used to get path)
+- Hash Map to get the cost of each state
 ### BFS
 - Queue to store the states in frontier
-- Map to check if the state is explored or not
-- Map to check if the state is in frontier or not
-- Map to get the parent of each state (used to get path)
-- Map to get the cost of each state
+- Hash Map to check if the state is either in frontier or explored or not
+- Hash Map to get the parent of each state (used to get path)
+- Hash Map to get the cost of each state
 ### A*
 - Priority Queue to store the states in frontier
-- Map to check if the state is explored or not
-- Map to get the parent of each state (used to get path)
-- Map to get the cost of each state
+- Hash Map to check if the state is explored or not
+- Hash Map to get the parent of each state (used to get path)
+- Hash Map to get the cost of each state
 
 ## State Representation
 - The state is represented as a single number starting from first row and first column as the most significant digit, and the bottom right as least significant digit, so the following state is represented as the number "102345678"
